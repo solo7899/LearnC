@@ -15,4 +15,6 @@ int main(int argc, char** argv) {
         // todo:  if found print the line
         if (strstr(line, argv[1])) printf("%s", line);
     }
+
+    fclose(file);
 }
