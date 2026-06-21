@@ -22,6 +22,8 @@ int main(int argc, char** argv) {
 
     char* word = argv[optind++];
 
+    char line[1024] = {0};
+    char original_line[1024] = {0};
     // todo:  open file(s)
     for (; optind < argc; optind++) {
         FILE* file = fopen(argv[optind], "r");
@@ -34,9 +36,9 @@ int main(int argc, char** argv) {
         printf("\nProcessing file: %s\n", argv[optind]);
 
         // todo:  read files line by line
-        char line[1024] = {0};
         while (fgets(line, sizeof(line), file) != NULL) {
             // if case senstive lowercase everything
+            strncpy(original_line, line, sizeof(line));
             if (isCaseSensitive) {
                 lowercase(word);
                 lowercase(line);
@@ -44,7 +46,7 @@ int main(int argc, char** argv) {
 
             // todo:  search for pattern in each line
             // todo:  if found print the line
-            if (strstr(line, word)) printf("\t%s", line);
+            if (strstr(line, word)) printf("\t%s", original_line);
         }
 
         fclose(file);
