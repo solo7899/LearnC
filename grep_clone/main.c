@@ -20,6 +20,8 @@ int main(int argc, char** argv) {
         }
     }
 
+    if (argc - optind - 1 < 2) usage(argv[0]);
+
     char* word = argv[optind++];
 
     char line[1024] = {0};
