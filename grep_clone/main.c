@@ -57,7 +57,7 @@ int main(int argc, char** argv) {
 }
 
 void usage(char* arg) {
-    fprintf(stderr, "Usage: %s <word> <filename>\n", arg);
+    fprintf(stderr, "Usage: %s [-i] <word> <filename>\n", arg);
     exit(1);
 }
 
