@@ -2,11 +2,17 @@
 #include <string.h>
 
 int main(int argc, char** argv) {
-    if (argc < 3) fprintf(stderr, "Usage: %s <word> <filename>\n", argv[0]);
+    if (argc < 3) {
+        fprintf(stderr, "Usage: %s <word> <filename>\n", argv[0]);
+        exit(1);
+    }
 
     // todo:  open file(s)
     FILE* file = fopen(argv[2], "r");
-    if (file == NULL) fprintf(stderr, "Error: Cannot open file %s\n", argv[2]);
+    if (file == NULL) {
+        fprintf(stderr, "Error: Cannot open file %s\n", argv[2]);
+        exit(1);
+    }
 
     // todo:  read files line by line
     char line[1024] = {0};
@@ -17,4 +23,5 @@ int main(int argc, char** argv) {
     }
 
     fclose(file);
+    return 0;
 }
