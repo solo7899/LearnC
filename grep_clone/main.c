@@ -23,27 +23,32 @@ int main(int argc, char** argv) {
     char* word = argv[optind++];
 
     // todo:  open file(s)
-    FILE* file = fopen(argv[optind], "r");
-    if (file == NULL) {
-        fprintf(stderr, "Error: Cannot open file [%s]\n", argv[optind]);
-        exit(1);
-    }
+    for (; optind < argc; optind++) {
+        FILE* file = fopen(argv[optind], "r");
+        if (file == NULL) {
+            fprintf(stderr, "Error: Cannot open file [%s]\n", argv[optind]);
 
-    // todo:  read files line by line
-    char line[1024] = {0};
-    while (fgets(line, sizeof(line), file) != NULL) {
-        // if case senstive lowercase everything
-        if (isCaseSensitive) {
-            lowercase(word);
-            lowercase(line);
+            continue;
         }
 
-        // todo:  search for pattern in each line
-        // todo:  if found print the line
-        if (strstr(line, word)) printf("%s", line);
-    }
+        printf("\nProcessing file: %s\n", argv[optind]);
 
-    fclose(file);
+        // todo:  read files line by line
+        char line[1024] = {0};
+        while (fgets(line, sizeof(line), file) != NULL) {
+            // if case senstive lowercase everything
+            if (isCaseSensitive) {
+                lowercase(word);
+                lowercase(line);
+            }
+
+            // todo:  search for pattern in each line
+            // todo:  if found print the line
+            if (strstr(line, word)) printf("\t%s", line);
+        }
+
+        fclose(file);
+    }
     return 0;
 }
 
