@@ -11,6 +11,7 @@ darray* darray_create(size_t capacity);
 void darray_destroy(darray* arr);
 void darray_push(darray* arr, int value);
 int darray_pop(darray* arr);
+void darray_print(darray* arr);
 
 int main() {
     printf("dynamic array\n");
@@ -44,4 +45,10 @@ void darray_push(darray* arr, int value) {
 int darray_pop(darray* arr) {
     if (!arr || arr->size == 0) return -1;
     return arr->data[--arr->size];
+}
+
+void darray_print(darray* arr) {
+    if (!arr) return;
+    for (size_t i = 0; i < arr->size; i++) printf("%d ", arr->data[i]);
+    printf("\n");
 }
