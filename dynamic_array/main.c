@@ -10,6 +10,7 @@ typedef struct {
 darray* darray_create(size_t capacity);
 void darray_destroy(darray* arr);
 void darray_push(darray* arr, int value);
+int darray_pop(darray* arr);
 
 int main() {
     printf("dynamic array\n");
@@ -38,4 +39,9 @@ void darray_push(darray* arr, int value) {
         arr->data = realloc(arr->data, arr->capacity * sizeof(int));
     }
     arr->data[arr->size++] = value;
+}
+
+int darray_pop(darray* arr) {
+    if (!arr || arr->size == 0) return -1;
+    return arr->data[--arr->size];
 }
