@@ -5,7 +5,7 @@ typedef struct darray darray;
 darray* darray_create(size_t capacity);
 void darray_destroy(darray* arr);
 void darray_push(darray* arr, int value);
-int darray_pop(darray* arr);
+int darray_pop(darray* arr, int* out);
 void darray_print(darray* arr);
 
 int main() {
@@ -43,9 +43,10 @@ void darray_push(darray* arr, int value) {
     arr->data[arr->size++] = value;
 }
 
-int darray_pop(darray* arr) {
-    if (!arr || arr->size == 0) return -1;
-    return arr->data[--arr->size];
+int darray_pop(darray* arr, int* out) {
+    if (!arr || arr->size == 0) return 1;
+    *out = arr->data[--arr->size];
+    return 0;
 }
 
 void darray_print(darray* arr) {
