@@ -30,3 +30,12 @@ void darray_destroy(darray* arr) {
     free(arr->data);
     free(arr);
 }
+
+void darray_push(darray* arr, int value) {
+    if (!arr) return;
+    if (arr->size >= arr->capacity) {
+        arr->capacity *= 2;
+        arr->data = realloc(arr->data, arr->capacity * sizeof(int));
+    }
+    arr->data[arr->size++] = value;
+}
