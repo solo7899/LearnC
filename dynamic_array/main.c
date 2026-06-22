@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdlib.h>
 
 typedef struct {
     int* data;
@@ -22,4 +23,10 @@ darray* darray_create(size_t capacity) {
     arr->size = 0;
     arr->capacity = capacity;
     return arr;
+}
+
+void darray_destroy(darray* arr) {
+    if (!arr) return;
+    free(arr->data);
+    free(arr);
 }
