@@ -42,18 +42,29 @@ void hashtable_put(node** hashtable, char* key, int value) {
     int index = hashtable_hash(key);
     node* current = hashtable + index;
 
-    while (current->value && current->next) {
+    if (!current) {
+        current = hashtable_newNode(key, value);
+        hashtable[index] = current;
+        return;
+    }
+
+    do {
         if (strcmp(current->key, key) == 0) {
             current->value = value;
             return;
         }
         current = current->next;
-    }
+    } while (current->next);
 
+    current->next = hashtable_newNode(key, value);
+}
+
+node* hashtable_newNode(key, value) {
     node* newNode = (node*)malloc(sizeof(node));
-    if (!current->next) return;
+    if (!newNode) return;
     newNode->key = key;
     newNode->value = value;
     newNode->next = NULL;
-    current->next = newNode;
+
+    return newNode;
 }
