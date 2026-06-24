@@ -7,6 +7,7 @@ typedef struct node node;
 node** hashtable_create();
 int hashtable_hash(char* key);
 void hashtable_put(node** hashtable, char* key, int value);
+static node* hashtable_newNode(char* key, int value);
 
 int main() {
     printf("hashtables...\n");
@@ -59,7 +60,7 @@ void hashtable_put(node** hashtable, char* key, int value) {
     current->next = hashtable_newNode(key, value);
 }
 
-static node* hashtable_newNode(key, value) {
+static node* hashtable_newNode(char* key, int value) {
     node* newNode = (node*)malloc(sizeof(node));
     if (!newNode) return;
     newNode->key = key;
