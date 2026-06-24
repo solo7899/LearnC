@@ -59,7 +59,7 @@ void hashtable_put(node** hashtable, char* key, int value) {
     current->next = hashtable_newNode(key, value);
 }
 
-node* hashtable_newNode(key, value) {
+static node* hashtable_newNode(key, value) {
     node* newNode = (node*)malloc(sizeof(node));
     if (!newNode) return;
     newNode->key = key;
