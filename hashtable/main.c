@@ -22,9 +22,8 @@ typedef struct node {
 
 // implementing a simple hash table using list
 node** hashtable_create() {
-    node** hashtable = (node**)malloc(sizeof(sizeof(node*) * 30));
+    node** hashtable = (node**)calloc(30, sizeof(node*));
     if (!hashtable) return NULL;
-    *hashtable = 0;
     return hashtable;
 }
 
