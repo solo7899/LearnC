@@ -68,3 +68,13 @@ static node* hashtable_newNode(char* key, int value) {
 
     return newNode;
 }
+
+node* hashtable_read(node** hashtable, char* key) {
+    int index = hashtable_hash(key);
+    node* current = hashtable[index];
+    while (current) {
+        if (strcmp(current->key, key) == 0) return current;
+        current = current->next;
+    }
+    return NULL;
+}
