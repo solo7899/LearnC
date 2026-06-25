@@ -3,11 +3,13 @@
 #include <stdlib.h>
 #include <string.h>
 
+static int hashtable_hash(char* key);
+
 typedef struct node {
     char* key;
     int value;
     node* next;
-};
+} node;
 
 // implementing a simple hash table using list
 node** hashtable_create() {
@@ -29,7 +31,7 @@ static int hashtable_hash(char* key) {
 
 void hashtable_put(node** hashtable, char* key, int value) {
     int index = hashtable_hash(key);
-    node* current = hashtable + index;
+    node* current = hashtable[index];
 
     if (!current) {
         current = hashtable_newNode(key, value);
@@ -69,7 +71,7 @@ node* hashtable_read(node** hashtable, char* key) {
     return NULL;
 }
 
-void hastable_destroy(node** hastable) {
+void hashtable_destroy(node** hastable) {
     for (int i = 0; i < 30; i++) {
         node* current = hastable[i];
         while (current) {
