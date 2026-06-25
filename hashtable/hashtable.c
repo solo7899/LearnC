@@ -5,12 +5,6 @@
 
 static int hashtable_hash(char* key);
 
-typedef struct node {
-    char* key;
-    int value;
-    node* next;
-} node;
-
 // implementing a simple hash table using list
 node** hashtable_create() {
     node** hashtable = (node**)calloc(30, sizeof(node*));

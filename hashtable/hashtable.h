@@ -2,7 +2,12 @@
 
 #define HASHTABLE_H 1
 
-typedef struct node node;
+typedef struct _node node;
+typedef struct _node {
+    char* key;
+    int value;
+    node* next;
+} node;
 
 node** hashtable_create();
 void hashtable_put(node** hashtable, char* key, int value);
