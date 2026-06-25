@@ -33,6 +33,7 @@ void hashtable_put(node** hashtable, char* key, int value) {
 
     if (!current) {
         current = hashtable_newNode(key, value);
+        if (!current) return;
         hashtable[index] = current;
         return;
     }
@@ -50,7 +51,7 @@ void hashtable_put(node** hashtable, char* key, int value) {
 
 static node* hashtable_newNode(char* key, int value) {
     node* newNode = (node*)malloc(sizeof(node));
-    if (!newNode) return;
+    if (!newNode) return NULL;
     newNode->key = key;
     newNode->value = value;
     newNode->next = NULL;
