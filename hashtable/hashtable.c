@@ -68,3 +68,14 @@ node* hashtable_read(node** hashtable, char* key) {
     }
     return NULL;
 }
+
+void hastable_destroy(node** hastable) {
+    for (int i = 0; i < 30; i++) {
+        node* current = hastable[i];
+        while (current) {
+            node* next = current->next;
+            free(current);
+            current = next;
+        }
+    }
+}
