@@ -4,6 +4,7 @@
 #include <string.h>
 
 static int hashtable_hash(char* key);
+static node* hashtable_newNode(char* key, int value);
 
 // implementing a simple hash table using list
 node** hashtable_create() {
