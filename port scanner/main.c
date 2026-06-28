@@ -1,4 +1,5 @@
 #include <arpa/inet.h>
+#include <netinet/in.h>
 #include <stdio.h>
 #include <sys/socket.h>
 
@@ -15,6 +16,9 @@ int sock_create(conType type) {
     switch (type) {
         case TCP:
             sockfd = socket(AF_INET, SOCK_STREAM, 0);
+            break;
+        case UDP:
+            sockfd = socket(AF_INET, SOCK_DGRAM, 0);
             break;
     }
 
