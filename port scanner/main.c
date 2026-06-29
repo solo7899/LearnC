@@ -28,6 +28,7 @@ int main(int argc, char** argv) {
         printf("Port 80 is open\n");
     }
 
+    close(sockfd);
     return 0;
 }
 
