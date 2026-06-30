@@ -5,8 +5,16 @@
 
 typedef enum _conType { TCP, UDP } conType;
 
+typedef struct port {
+    enum { TYPE_INT, TYPE_RANGE } type;
+    union {
+        int portNum;
+        int portRange[2];
+    } value;
+} port;
+
 int sock_create(conType type);
-int check_tcp_port(int sockfd, struct sockaddr_in* target, int port,
+int check_tcp_port(int sockfd, struct sockaddr_in* target, port port,
                    char* buffer);
 
 int main(int argc, char** argv) {
@@ -16,7 +24,7 @@ int main(int argc, char** argv) {
     }
 
     char* ipaddr = argv[1];
-    int port = atoi(argv[2]);
+    port port;
 
     // let's do just a simple tcp scanning for now and move on
     struct sockaddr_in target;
@@ -56,9 +64,9 @@ int sock_create(conType type) {
     return sockfd;
 }
 
-int check_tcp_port(int sockfd, struct sockaddr_in* target, int port,
+int check_tcp_port(int sockfd, struct sockaddr_in* target, port port,
                    char* buffer) {
-    target->sin_port = htons(port);
+    target->sin_port = htons(port.value.portNum);
     char* message = "\x01";
 
     if (connect(sockfd, (struct sockaddr*)target, sizeof(*target)) < 0) {
