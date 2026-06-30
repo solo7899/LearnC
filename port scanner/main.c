@@ -1,6 +1,8 @@
 #include <arpa/inet.h>
 #include <netinet/in.h>
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 #include <sys/socket.h>
 
 typedef enum _conType { TCP, UDP } conType;
@@ -14,7 +16,7 @@ typedef struct port {
 } port;
 
 int sock_create(conType type);
-int check_tcp_port(int sockfd, struct sockaddr_in* target, port port,
+int check_tcp_port(int sockfd, struct sockaddr_in* target, int port,
                    char* buffer);
 
 int main(int argc, char** argv) {
@@ -30,22 +32,58 @@ int main(int argc, char** argv) {
     struct sockaddr_in target;
     char buffer[1024] = {0};
 
-    int sockfd = sock_create(TCP);
-    if (sockfd < 0) {
-        perror("socket creation failed");
-        return 1;
-    }
-
     target.sin_family = AF_INET;
     inet_pton(AF_INET, ipaddr, &target.sin_addr.s_addr);
 
-    if (check_tcp_port(sockfd, &target, port, buffer) < 0) {
-        fprintf(stderr, "Port 80 is closed\n");
+    if (strchr(argv[2], '-')) {
+        if (sscanf(argv[2], "%d-%d", &port.value.portRange[0],
+                   &port.value.portRange[1]) != 2) {
+            fprintf(stderr, "Invalid port range\n");
+            return 1;
+        }
+        port.type = TYPE_RANGE;
     } else {
-        printf("Port 80 is open\n");
+        port.value.portNum = atoi(argv[2]);
+        port.type = TYPE_INT;
     }
 
-    close(sockfd);
+    switch (port.type) {
+        case TYPE_INT:
+            int sockfd = sock_create(TCP);
+            if (sockfd < 0) {
+                perror("socket creation failed");
+                return 1;
+            }
+
+            if (check_tcp_port(sockfd, &target, port.value.portNum, buffer) <
+                0) {
+                fprintf(stderr, "Port %d is closed\n", port.value.portNum);
+            } else {
+                printf("Port %d is open\n", port.value.portNum);
+            }
+
+            close(sockfd);
+
+            break;
+        case TYPE_RANGE:
+
+            for (int i = port.value.portRange[0]; i <= port.value.portRange[1];
+                 i++) {
+                int sockfd = sock_create(TCP);
+                if (sockfd < 0) {
+                    perror("socket creation failed");
+                    return 1;
+                }
+
+                if (check_tcp_port(sockfd, &target, i, buffer) < 0)
+                    fprintf(stderr, "Port %d is closed\n", i);
+                else
+                    printf("Port %d is open\n", i);
+                close(sockfd);
+            }
+
+            break;
+    }
     return 0;
 }
 
@@ -64,9 +102,9 @@ int sock_create(conType type) {
     return sockfd;
 }
 
-int check_tcp_port(int sockfd, struct sockaddr_in* target, port port,
+int check_tcp_port(int sockfd, struct sockaddr_in* target, int port,
                    char* buffer) {
-    target->sin_port = htons(port.value.portNum);
+    target->sin_port = htons(port);
     char* message = "\x01";
 
     if (connect(sockfd, (struct sockaddr*)target, sizeof(*target)) < 0) {
