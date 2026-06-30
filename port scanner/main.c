@@ -44,11 +44,6 @@ int sock_create(conType type) {
             break;
     }
 
-    if (sockfd < 0) {
-        fprintf(stderr, "Error creating socket\n");
-        return -1;
-    }
-
     return sockfd;
 }
 
