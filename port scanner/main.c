@@ -6,9 +6,18 @@
 typedef enum _conType { TCP, UDP } conType;
 
 int sock_create(conType type);
-int check_port(int sockfd, struct sockaddr_in* target, int port, char* buffer);
+int check_tcp_port(int sockfd, struct sockaddr_in* target, int port,
+                   char* buffer);
 
 int main(int argc, char** argv) {
+    if (argc < 3) {
+        perror("Usage: ./port_scanner <ip_address> <port>");
+        return 1;
+    }
+
+    char* ipaddr = argv[1];
+    int port = atoi(argv[2]);
+
     // let's do just a simple tcp scanning for now and move on
     struct sockaddr_in target;
     char buffer[1024] = {0};
@@ -20,9 +29,9 @@ int main(int argc, char** argv) {
     }
 
     target.sin_family = AF_INET;
-    inet_pton(AF_INET, "142.251.211.110", &target.sin_addr.s_addr);
+    inet_pton(AF_INET, ipaddr, &target.sin_addr.s_addr);
 
-    if (check_port(sockfd, &target, 80, buffer) < 0) {
+    if (check_tcp_port(sockfd, &target, port, buffer) < 0) {
         fprintf(stderr, "Port 80 is closed\n");
     } else {
         printf("Port 80 is open\n");
@@ -47,7 +56,8 @@ int sock_create(conType type) {
     return sockfd;
 }
 
-int check_port(int sockfd, struct sockaddr_in* target, int port, char* buffer) {
+int check_tcp_port(int sockfd, struct sockaddr_in* target, int port,
+                   char* buffer) {
     target->sin_port = htons(port);
     char* message = "\x01";
 
