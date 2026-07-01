@@ -7,12 +7,6 @@
 #include <sys/socket.h>
 #include <unistd.h>
 
-#define MAX_THREDS 10
-
-char buffer[1024] = {0};
-int counter;
-pthread_mutex_t lock = PTHREAD_MUTEX_INITIALIZER;
-
 typedef enum _conType { TCP, UDP } conType;
 
 typedef struct port {
@@ -30,18 +24,13 @@ int tcp_scan(port port, struct sockaddr_in* target, char* buffer);
 void tcp_conditional_wrapper(int sockfd, struct sockaddr_in* target, int port,
                              char* buffer);
 
-typedef struct workerStruct {
-    struct sockaddr_in* target;
-    port port;
-} ws;
-int worker(void* ws);
-
 int main(int argc, char** argv) {
     if (argc < 3) {
         perror("Usage: ./port_scanner <ip_address> <port>");
         return 1;
     }
 
+    char* buffer;
     char* ipaddr = argv[1];
     port port;
 
@@ -64,9 +53,7 @@ int main(int argc, char** argv) {
         port.type = TYPE_INT;
     }
 
-    tcp_scan(port, target, buffer);
-
-    free(target);
+    tcp_scan(port, &target, buffer);
 
     return 0;
 }
@@ -119,18 +106,17 @@ int tcp_scan(port port, struct sockaddr_in* target, char* buffer) {
             break;
         case TYPE_RANGE:
 
-            counter = port.value.portRange[0];
-            pthread_t threads[MAX_THREDS];
-            ws* workerS;
-            workerS->target = target;
-            workerS->port = port;
+            for (int i = port.value.portRange[0]; i <= port.value.portRange[1];
+                 i++) {
+                int sockfd = sock_create(TCP);
+                if (sockfd < 0) {
+                    perror("socket creation failed");
+                    return -1;
+                }
 
-            for (int i = 0; i < MAX_THREDS; i++)
-                pthread_create(&threads[i], NULL, (void*)worker,
-                               (void*)workerS);
-            for (int i = 0; i < MAX_THREDS; i++) pthread_join(threads[i], NULL);
-
-            pthread_mutex_destroy(&lock);
+                tcp_conditional_wrapper(sockfd, target, i, buffer);
+                close(sockfd);
+            }
 
             break;
     }
@@ -142,27 +128,4 @@ void tcp_conditional_wrapper(int sockfd, struct sockaddr_in* target, int port,
         fprintf(stderr, "Port %d is closed\n", port);
     else
         printf("Port %d is open\n", port);
-}
-
-int worker(void* workerStruct) {
-    printf("working %d", counter);
-    ws* workS = (ws*)workerStruct;
-    while (1) {
-        if (counter > workS->port.value.portRange[1]) {
-            break;
-        }
-        int sockfd = sock_create(TCP);
-        if (sockfd < 0) {
-            perror("socket creation failed");
-            return -1;
-        }
-
-        tcp_conditional_wrapper(sockfd, (struct sockaddr_in*)workS->target,
-                                counter, buffer);
-        close(sockfd);
-
-        pthread_mutex_lock(&lock);
-        counter++;
-        pthread_mutex_unlock(&lock);
-    }
 }
