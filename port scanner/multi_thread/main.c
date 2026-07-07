@@ -1,6 +1,8 @@
+#include <arpa/inet.h>
 #include <netinet/in.h>
 #include <pthread.h>
 #include <stdio.h>
+#include <string.h>
 #include <sys/socket.h>
 #include <unistd.h>
 
@@ -10,10 +12,27 @@ char* IP;
 int counter;
 
 void tcp_ping(int port) {
-    printf("Pinging port: %d\n", port);
-    // Simulate some work with sleep
+    char* message = "\x01";
+    int sockfd = socket(AF_INET, SOCK_STREAM, 0);
+    struct sockaddr_in servaddr;
+    if (sockfd < 0) {
+        printf("socket creation failed for port %d\n", port);
+        return;
+    }
+    servaddr.sin_family = AF_INET;
+    servaddr.sin_addr.s_addr = inet_addr(IP);
+    servaddr.sin_port = htons(port);
 
-    sleep(1);
+    if (connect(sockfd, (struct sockaddr*)&servaddr, sizeof(servaddr)) != 0) {
+        printf("connection failed for port %d\n", port);
+        return;
+    }
+
+    if (send(sockfd, message, strlen(message) + 1, 0) < 0)
+        printf("port %d is closed\n", port);
+    else
+        printf("port %d is open\n", port);
+    close(sockfd);
 }
 
 void* worker(void* end) {
@@ -35,6 +54,7 @@ int main(int argc, char** argv) {
         return 1;
     }
 
+    IP = argv[1];
     int start, finish;
     sscanf(argv[2], "%d-%d", &start, &finish);
 
