@@ -24,9 +24,11 @@ int main() {
             }
             input[i] = '\0';
             args[++j] = NULL;
-            execvp(args[0], args);
-        } else {
+            if (execvp(args[0], args) < 0) perror("command execution failed");
+        } else if (pid > 0) {
             wait(NULL);
+        } else {
+            perror("fork failed\n");
         }
     }
     return 0;
